@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using UnityEngine.UI;
+
 public class BallMove : MonoBehaviour
 {
 	public Transform camobj, camdir;
@@ -9,8 +11,13 @@ public class BallMove : MonoBehaviour
 	Rigidbody rb;
 	float dis1, newproc, t = 0.5f;
 	bool b = false;
-	
-	// Use this for initialization
+	bool k = false;
+	int i = 0;
+	int score;
+
+	public Text Score;	
+
+
 	void Start ()
 	{
 		rb = GetComponent<Rigidbody> ();
@@ -23,17 +30,31 @@ public class BallMove : MonoBehaviour
 			Application.LoadLevel (1);
 		}
 		if (other.tag == "Player") {
-			GetComponent<MeshRenderer> ().material.color = Color.Lerp (GetComponent<MeshRenderer> ().material.color, new Color (Random.Range (0, 0.255f), Random.Range (0, 0.255f), Random.Range (0, 0.255f)), 1f);
+			k = true;
+			score++;
 		}
 	}
+
 	// Update is called once per frame
 	void Update ()
 	{
+		Score.text = "Score: " + score;
 		camdir.position = transform.position;
 		Vector3 accel = Input.acceleration; 
 		rb.AddForce (camdir.transform.TransformDirection (accel.x * 40, 0, (accel.y + 0.6f) * 60));
+
+		if (k) {
+			GetComponent<MeshRenderer> ().material.color = Color.Lerp (GetComponent<MeshRenderer> ().material.color, new Color (Random.Range (0, 0.255f), Random.Range (0, 0.255f), Random.Range (0, 0.255f)), i / 100f);
+			i++;
 		
-		
+			if (i >= 100) {
+				k = false;
+				i = 0;
+			}
+		}
+		if (score >= 5) {
+			Application.LoadLevel (2);
+		}
 		if (Input.touchCount == 1) {
 			if (Input.GetTouch (0).phase == TouchPhase.Moved) {
 				Vector2 posds = Input.GetTouch (0).deltaPosition;
